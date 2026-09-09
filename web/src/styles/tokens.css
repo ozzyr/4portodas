@@ -1,0 +1,146 @@
+/* ==========================================================================
+   Design Tokens — 4 Por Todas (Acolhimento e Protagonismo Feminino)
+   Baseado na paleta de acolhimento e identidade visual
+   ========================================================================== */
+
+:root {
+  /* Primary — Rosa acolhimento */
+  --pink-50: #FDF2F8;
+  --pink-100: #FCE7F3;
+  --pink-200: #F7C9E1;
+  --pink-300: #EFA3CB;
+  --pink-400: #D86AA6;
+  --pink-500: #CC3B88; /* Cor principal de acolhimento e ação */
+  --pink-600: #B52C74;
+  --pink-700: #94205D;
+  --pink-800: #781A4D;
+  --pink-900: #63173F;
+  --pink-950: #3D0A25;
+
+  /* Secondary — Violeta proteção & governança */
+  --violet-50: #FAF5FF;
+  --violet-100: #F3E8FF;
+  --violet-200: #E7CCFA;
+  --violet-300: #D8A4F3;
+  --violet-400: #BC6DE8;
+  --violet-500: #AA2BE3; /* Ação secundária */
+  --violet-600: #8C18C5;
+  --violet-700: #6508AE; /* Foco acessível */
+  --violet-800: #55056E; /* Contorno e áreas protegidas */
+  --violet-900: #46045C;
+  --violet-950: #36016C;
+
+  /* Neutral — Ameixa elegante (sem frieza de cinza puro) */
+  --neutral-50: #FCFAFC;
+  --neutral-100: #F7F2F6;
+  --neutral-200: #EDE4EA;
+  --neutral-300: #D9CAD3;
+  --neutral-400: #B7A3AF;
+  --neutral-500: #927C89;
+  --neutral-600: #705D68;
+  --neutral-700: #55464F;
+  --neutral-800: #392F35;
+  --neutral-900: #241E22; /* Texto principal de alto contraste */
+  --neutral-950: #171216;
+
+  /* Accent — Magenta Expressão */
+  --magenta-500: #DE36E9;
+  --magenta-700: #A516B5;
+
+  /* Semantic Colors */
+  --success-50: #E9F7F0;
+  --success-500: #237A57;
+  --success-600: #1C6447;
+  --success-700: #144E37;
+
+  --warning-50: #FFF4DB;
+  --warning-500: #A15C00;
+  --warning-600: #864D00;
+
+  --danger-50: #FDECEF;
+  --danger-500: #B4233A;
+  --danger-600: #961C30;
+
+  --info-50: #EAF1FC;
+  --info-500: #2457A6;
+  --info-600: #1C4688;
+
+  /* Semantic Interface Tokens */
+  --color-brand-primary: var(--pink-500);
+  --color-brand-primary-hover: var(--pink-600);
+  --color-brand-primary-active: var(--pink-700);
+
+  --color-brand-secondary: var(--violet-500);
+  --color-brand-secondary-hover: var(--violet-600);
+
+  --color-surface-page: var(--neutral-50);
+  --color-surface-card: #FFFFFF;
+  --color-surface-soft: var(--pink-50);
+  --color-surface-protected: var(--violet-50);
+
+  --color-text-primary: var(--neutral-900);
+  --color-text-secondary: var(--neutral-600);
+  --color-text-muted: var(--neutral-500);
+  --color-text-on-brand: #FFFFFF;
+
+  --color-border-default: var(--neutral-300);
+  --color-border-subtle: var(--neutral-200);
+  --color-border-focus: var(--violet-700);
+  --color-link: var(--pink-800);
+
+  /* Typography */
+  --font-family-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-serif: 'Playfair Display', Georgia, serif;
+
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+  --font-size-5xl: 3rem;      /* 48px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.65;
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+
+  /* Border Radii */
+  --radius-sm: 0.375rem; /* 6px */
+  --radius-md: 0.625rem; /* 10px */
+  --radius-lg: 1rem;     /* 16px */
+  --radius-xl: 1.5rem;   /* 24px */
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(36, 30, 34, 0.05), 0 1px 2px rgba(36, 30, 34, 0.03);
+  --shadow-md: 0 4px 14px rgba(85, 5, 110, 0.08), 0 2px 6px rgba(204, 59, 136, 0.04);
+  --shadow-lg: 0 10px 30px rgba(85, 5, 110, 0.12), 0 4px 12px rgba(204, 59, 136, 0.06);
+  --shadow-xl: 0 20px 40px rgba(85, 5, 110, 0.16), 0 8px 16px rgba(36, 30, 34, 0.08);
+  --shadow-focus: 0 0 0 3px rgba(101, 8, 174, 0.3);
+  --shadow-focus-danger: 0 0 0 3px rgba(180, 35, 58, 0.3);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}

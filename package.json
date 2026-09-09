@@ -1,0 +1,14 @@
+{
+  "name": "4portodas-monorepo",
+  "version": "1.0.0",
+  "description": "Monorepo 4 Por Todas — Backend Node.js + Web React + Mobile React Native",
+  "private": true,
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:web": "npm --prefix web run dev",
+    "dev:mobile": "npm --prefix mobile run start",
+    "build:backend": "npm --prefix backend run build",
+    "build:web": "npm --prefix web run build",
+    "start": "npm --prefix backend run dev"
+  }
+}
