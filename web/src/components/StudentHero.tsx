@@ -53,7 +53,7 @@ export const StudentHero: React.FC<StudentHeroProps> = ({ onStartReport, onOpenE
         {/* Hero Visual with Mascot */}
         <div className="hero-visual">
           <div className="hero-visual-card">
-            <img src="/assets/mascote.png" alt="Mascote da Escola — Guia Acolhedora" className="mascot-hero-img" />
+            <img src="./assets/mascote.png" alt="Mascote da Escola — Guia Acolhedora" className="mascot-hero-img" />
             <div className="mascot-hero-bubble">
               "Olá! Eu sou a mascote da nossa escola. Estou aqui para te garantir que cada palavra sua será acolhida com todo respeito, carinho e cuidado que você merece."
             </div>

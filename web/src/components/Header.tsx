@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({
             setActiveView('student');
           }}
         >
-          <img src="/assets/mascote.png" alt="Mascote 4 Por Todas" className="brand-logo-img" />
+          <img src="./assets/mascote.png" alt="Mascote 4 Por Todas" className="brand-logo-img" />
           <div>
             <div className="brand-name">4 Por Todas</div>
             <div className="brand-sub">Acolhimento & Proteção Escolar</div>
