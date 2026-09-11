@@ -36,6 +36,29 @@ const FREQUENCIES = [
   'Está acontecendo hoje / Agora'
 ];
 
+const STEP_MASCOT_GUIDANCE = [
+  {
+    image: './assets/step1-ocorrencia.jpg',
+    speech: '"Olá! Me conte com calma o que aconteceu. Respire fundo, você está em um espaço acolhedor, seguro e protegido."'
+  },
+  {
+    image: './assets/step2-contexto.jpg',
+    speech: '"Saber onde e com que frequência isso costuma ocorrer nos ajuda a manter os espaços da escola mais protegidos e monitorados."'
+  },
+  {
+    image: './assets/step3-relato.jpg',
+    speech: '"Escreva do seu jeito, com suas próprias palavras e sem pressa. Tudo o que você disser será acolhido com respeito e sigilo."'
+  },
+  {
+    image: './assets/step4-sigilo.jpg',
+    speech: '"Você tem total autonomia: escolha se prefere sigilo 100% anônimo ou apoio individual e discreto da psicóloga escolar."'
+  },
+  {
+    image: './assets/step5-envio.jpg',
+    speech: '"Quase pronto! Confira suas informações. Ao confirmar o envio, você receberá seu código exclusivo de protocolo confidencial."'
+  }
+];
+
 export const StudentForm: React.FC<{ onCaseCreated?: (newCase: ReportCase) => void }> = ({ onCaseCreated }) => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [loading, setLoading] = useState(false);
@@ -260,11 +283,23 @@ export const StudentForm: React.FC<{ onCaseCreated?: (newCase: ReportCase) => vo
             })}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--pink-50)', padding: '0.75rem 1.25rem', borderRadius: 'var(--radius-md)', borderLeft: '4px solid var(--pink-500)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--pink-50)', padding: '0.75rem 1.25rem', borderRadius: 'var(--radius-md)', borderLeft: '4px solid var(--pink-500)', marginBottom: '1.25rem' }}>
             <Sparkles size={18} color="var(--pink-600)" />
             <span style={{ fontSize: '0.85rem', color: 'var(--pink-900)', fontWeight: 600 }}>
               Etapa {currentStep} de 5: {STEPS[currentStep - 1].title} — {STEPS[currentStep - 1].subtitle}
             </span>
+          </div>
+
+          {/* Mascot Guidance Banner for Current Step */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', background: 'linear-gradient(135deg, var(--pink-50), var(--violet-50))', border: '1.5px solid var(--pink-200)', borderRadius: 'var(--radius-lg)', padding: '1rem 1.25rem' }}>
+            <img
+              src={STEP_MASCOT_GUIDANCE[currentStep - 1].image}
+              alt="Mascote da Escola"
+              style={{ width: 80, height: 80, borderRadius: '50%', border: '2.5px solid var(--pink-500)', objectFit: 'cover', flexShrink: 0, boxShadow: '0 3px 10px rgba(204, 59, 136, 0.2)' }}
+            />
+            <div style={{ fontSize: '0.95rem', color: 'var(--neutral-900)', fontStyle: 'italic', lineHeight: 1.5, fontWeight: 500 }}>
+              {STEP_MASCOT_GUIDANCE[currentStep - 1].speech}
+            </div>
           </div>
         </div>
 
