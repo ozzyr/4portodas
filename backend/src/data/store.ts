@@ -189,7 +189,7 @@ export class DataStore {
     return report;
   }
 
-  public notifyConselhoTutelar(id: string): ReportCase | null {
+  public notifyConselhoTutelar(id: string, dispatchText?: string, recipientCouncil?: string): ReportCase | null {
     const report = this.getCaseById(id);
     if (!report) return null;
 
@@ -198,10 +198,15 @@ export class DataStore {
 
     report.legalActions.conselhoTutelarNotified = true;
     report.status = "Encaminhado ao Conselho Tutelar";
+    
+    const noteContent = dispatchText 
+      ? `Ofício formal emitido para ${recipientCouncil || "o Conselho Tutelar Regional"}. Parecer: "${dispatchText}"`
+      : "Ofício formal registrado e gerado para o Conselho Tutelar Regional conforme Art. 13 do ECA e Lei 14.811/2024.";
+
     report.confidentialNotes.push({
       author: "Ofício de Proteção Escolar",
       date: formattedDate,
-      text: "Caso formalmente reportado ao Conselho Tutelar Regional conforme Art. 13 do ECA e Lei 14.811/2024."
+      text: noteContent
     });
 
     return report;

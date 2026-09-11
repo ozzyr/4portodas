@@ -3,6 +3,30 @@
    Hero, Wizard, Protocolo, Painel do Comitê & Styleguide Explorer
    ========================================================================== */
 
+/* Print Styles for Official PDF Generation */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .printable-oficio-paper, .printable-oficio-paper * {
+    visibility: visible;
+  }
+  .printable-oficio-paper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20mm !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .no-print, .safety-bar, .app-header, footer, .modal-backdrop {
+    display: none !important;
+    background: none !important;
+  }
+}
+
 /* App Header & Safety Banner */
 .app-header {
   background: #FFFFFF;

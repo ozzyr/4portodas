@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Shield, FileText, Send, UserCheck, MessageSquarePlus, RefreshCw } from 'lucide-react';
+import { Shield, FileText, UserCheck, MessageSquarePlus, RefreshCw, Printer } from 'lucide-react';
 import { ReportCase, CaseStatus } from '../types';
 import { ApiService } from '../services/api';
+import { OfficialDispatchModal } from './OfficialDispatchModal';
 
 interface CommitteeDashboardProps {
   cases: ReportCase[];
@@ -14,6 +15,7 @@ export const CommitteeDashboard: React.FC<CommitteeDashboardProps> = ({ cases, o
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [newNoteText, setNewNoteText] = useState<string>('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [isDispatchModalOpen, setIsDispatchModalOpen] = useState(false);
 
   // Computed metrics
   const total = cases.length;
@@ -48,12 +50,9 @@ export const CommitteeDashboard: React.FC<CommitteeDashboardProps> = ({ cases, o
     }
   };
 
-  const handleNotifyConselho = async (caseId: string) => {
-    if (!confirm('Deseja emitir e registrar o ofício formal para o Conselho Tutelar Regional conforme o Artigo 13 do ECA e Lei 14.811/2024?')) {
-      return;
-    }
+  const handleConfirmDispatch = async (caseId: string, dispatchText: string, recipientCouncil: string) => {
     setActionLoading(true);
-    const updated = await ApiService.notifyConselho(caseId);
+    const updated = await ApiService.notifyConselho(caseId, dispatchText, recipientCouncil);
     setActionLoading(false);
     onRefreshCases();
     if (updated) {
@@ -234,11 +233,12 @@ export const CommitteeDashboard: React.FC<CommitteeDashboardProps> = ({ cases, o
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
-                  disabled={actionLoading || selectedCase.legalActions.conselhoTutelarNotified}
-                  onClick={() => handleNotifyConselho(selectedCase.id)}
+                  disabled={actionLoading}
+                  onClick={() => setIsDispatchModalOpen(true)}
+                  style={selectedCase.legalActions.conselhoTutelarNotified ? { borderColor: 'var(--violet-500)', background: 'var(--violet-50)', color: 'var(--violet-900)' } : {}}
                 >
-                  <Send size={15} />
-                  <span>{selectedCase.legalActions.conselhoTutelarNotified ? 'Conselho Notificado ✓' : 'Oficiar Conselho Tutelar'}</span>
+                  <Printer size={15} />
+                  <span>{selectedCase.legalActions.conselhoTutelarNotified ? 'Ver / Reimprimir Ofício PDF ✓' : 'Elaborar & Emitir Ofício PDF'}</span>
                 </button>
 
                 <button
@@ -292,6 +292,15 @@ export const CommitteeDashboard: React.FC<CommitteeDashboardProps> = ({ cases, o
           </div>
         )}
       </div>
+
+      {/* Modal de Elaboração e Geração de Ofício Formal em PDF */}
+      <OfficialDispatchModal
+        isOpen={isDispatchModalOpen}
+        onClose={() => setIsDispatchModalOpen(false)}
+        reportCase={selectedCase}
+        onConfirmDispatch={handleConfirmDispatch}
+        currentUserName={currentUser?.name}
+      />
     </div>
   );
 };

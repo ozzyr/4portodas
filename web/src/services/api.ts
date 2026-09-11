@@ -101,11 +101,13 @@ export const ApiService = {
     }
   },
 
-  // Ofício Conselho Tutelar
-  async notifyConselho(id: string): Promise<ReportCase | null> {
+  // Ofício Conselho Tutelar com Parecer da Gestão
+  async notifyConselho(id: string, dispatchText?: string, recipientCouncil?: string): Promise<ReportCase | null> {
     try {
       const res = await fetch(`${API_BASE}/reports/${id}/conselho`, {
-        method: 'POST'
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dispatchText, recipientCouncil })
       });
       if (!res.ok) throw new Error('Falha ao notificar conselho');
       const data = await res.json();

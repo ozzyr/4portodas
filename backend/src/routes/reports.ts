@@ -106,10 +106,12 @@ reportsRouter.post("/:id/notes", (req: Request, res: Response) => {
   return res.json({ success: true, case: updated });
 });
 
-// POST /api/reports/:id/conselho - Registrar encaminhamento oficial ao Conselho Tutelar
+// POST /api/reports/:id/conselho - Registrar encaminhamento oficial ao Conselho Tutelar com parecer
 reportsRouter.post("/:id/conselho", (req: Request, res: Response) => {
   const { id } = req.params;
-  const updated = store.notifyConselhoTutelar(id);
+  const { dispatchText, recipientCouncil } = req.body as { dispatchText?: string; recipientCouncil?: string };
+
+  const updated = store.notifyConselhoTutelar(id, dispatchText, recipientCouncil);
   if (!updated) {
     return res.status(404).json({ error: "Caso não encontrado." });
   }
