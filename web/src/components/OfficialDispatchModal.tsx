@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Printer, FileText, ArrowLeft } from 'lucide-react';
+import { X, Printer, FileText, ArrowLeft, Download } from 'lucide-react';
 import { ReportCase } from '../types';
 
 interface OfficialDispatchModalProps {
@@ -28,22 +28,110 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
 
   if (!isOpen || !reportCase) return null;
 
-  const handlePrintAndConfirm = async () => {
-    setIsSubmitting(true);
-    await onConfirmDispatch(reportCase.id, dispatchText, recipient);
-    setIsSubmitting(false);
-
-    // Abre a janela nativa de impressão/salvar em PDF
-    setTimeout(() => {
-      window.print();
-    }, 150);
-  };
-
   const today = new Date().toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'long',
     year: 'numeric'
   });
+
+  const handlePrintAndConfirm = async () => {
+    setIsSubmitting(true);
+    await onConfirmDispatch(reportCase.id, dispatchText, recipient);
+    setIsSubmitting(false);
+
+    // Aciona a impressão/geração de PDF nativa do navegador
+    setTimeout(() => {
+      window.print();
+    }, 200);
+  };
+
+  const handleDownloadDocument = async () => {
+    setIsSubmitting(true);
+    await onConfirmDispatch(reportCase.id, dispatchText, recipient);
+    setIsSubmitting(false);
+
+    const docContent = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Ofício Formal de Encaminhamento — Protocolo ${reportCase.id}</title>
+  <style>
+    @page { size: A4; margin: 20mm; }
+    body { font-family: 'Times New Roman', Times, Georgia, serif; line-height: 1.6; color: #111; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; border-bottom: 2px solid #222; padding-bottom: 12px; margin-bottom: 24px; }
+    .header-sub { font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; }
+    .header-title { font-size: 20px; font-weight: bold; margin: 6px 0; }
+    .header-dept { font-size: 13px; color: #444; }
+    .meta-row { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; }
+    .addressee { margin-bottom: 20px; font-size: 15px; }
+    .p-text { text-align: justify; text-indent: 35px; font-size: 14px; margin-bottom: 14px; }
+    .case-box { background: #f8f8f8; border: 1px solid #ddd; padding: 14px 18px; border-radius: 4px; margin: 18px 0; font-family: Arial, sans-serif; font-size: 13px; }
+    .case-box div { margin-bottom: 5px; }
+    .signatures { display: flex; justify-content: space-around; margin-top: 50px; text-align: center; font-size: 13px; }
+    .sig-block { border-top: 1px solid #222; padding-top: 6px; width: 260px; }
+    .footer-note { margin-top: 35px; border-top: 1px solid #eee; padding-top: 8px; font-size: 10px; color: #777; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-sub">REPÚBLICA FEDERATIVA DO BRASIL • ESTABELECIMENTO DE ENSINO</div>
+    <div class="header-title">${schoolName.toUpperCase()}</div>
+    <div class="header-dept">Comitê de Acolhimento, Convivência e Proteção Escolar — Sistema 4 Por Todas</div>
+  </div>
+
+  <div class="meta-row">
+    <div><strong>OFÍCIO Nº:</strong> ${new Date().getFullYear()}/${reportCase.id}</div>
+    <div>Localidade, ${today}.</div>
+  </div>
+
+  <div class="addressee">
+    <div><strong>Ao(À) Ilustríssimo(a) Senhor(a) Conselheiro(a) Tutelar</strong></div>
+    <div>${recipient}</div>
+    <div style="margin-top: 4px;"><strong>Assunto:</strong> Notificação Compulsória — Artigo 13 do Estatuto da Criança e do Adolescente (Lei 8.069/1990) e Lei 14.811/2024.</div>
+  </div>
+
+  <p class="p-text">Prezado(a) Conselheiro(a),</p>
+  <p class="p-text">Vimos por meio deste formalizar a notificação compulsória referente ao relato de violência/assédio escolar registrado sob o <strong>Protocolo nº ${reportCase.id}</strong> em <strong>${reportCase.date}</strong>, cujos dados sintetizados seguem abaixo:</p>
+
+  <div class="case-box">
+    <div><strong>Classificação do Fato:</strong> ${reportCase.type}</div>
+    <div><strong>Local da Ocorrência:</strong> ${reportCase.location} (Frequência: ${reportCase.frequency})</div>
+    <div><strong>Identificação da Estudante:</strong> ${reportCase.isAnonymous ? 'Regime de Anonimato e Proteção Integral (Art. 100 do ECA)' : reportCase.studentName}</div>
+    <div style="border-top: 1px dashed #ccc; padding-top: 8px; margin-top: 8px;">
+      <strong>Síntese do Relato:</strong><br>
+      <em>"${reportCase.narrative}"</em>
+    </div>
+    ${reportCase.hasEvidence ? `<div><strong>Anexos Custodiados:</strong> ${reportCase.evidenceFiles.join(', ')}</div>` : ''}
+  </div>
+
+  <p class="p-text"><strong>Parecer da Gestão Escolar e Providências Iniciais:</strong> ${dispatchText}</p>
+  <p class="p-text">Renovamos nossos protestos de elevada consideração e colocamo-nos à disposição desta entidade tutelar para colaborar na implementação das medidas de proteção cabíveis.</p>
+
+  <div class="signatures">
+    <div class="sig-block">
+      <strong>DIREÇÃO ESCOLAR</strong><br>
+      Unidade de Ensino
+    </div>
+    <div class="sig-block">
+      <strong>${managerName.toUpperCase()}</strong><br>
+      Comitê de Proteção Escolar (4 Por Todas)
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Documento emitido eletronicamente pelo Sistema 4 Por Todas em conformidade com as Leis Federais 8.069/1990 (ECA), 14.811/2024 e 13.709/2018 (LGPD).
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([docContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Oficio_Conselho_Tutelar_${reportCase.id}.html`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="modal-backdrop" onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(23, 18, 22, 0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
@@ -51,7 +139,7 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
         className="card modal-dispatch-content"
         onClick={(e) => e.stopPropagation()}
         style={{
-          maxWidth: viewMode === 'preview' ? '820px' : '720px',
+          maxWidth: viewMode === 'preview' ? '860px' : '720px',
           width: '100%',
           maxHeight: '90vh',
           overflowY: 'auto',
@@ -182,7 +270,7 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
         {/* PREVIEW & PRINTABLE DOCUMENT MODE */}
         {viewMode === 'preview' && (
           <div>
-            <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--neutral-200)', paddingBottom: '1rem' }}>
+            <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--neutral-200)', paddingBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
               <button
                 type="button"
                 className="btn btn-secondary btn-sm"
@@ -192,16 +280,28 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
                 <span>Voltar e Editar</span>
               </button>
 
-              <button
-                type="button"
-                className="btn btn-primary btn-lg"
-                onClick={handlePrintAndConfirm}
-                disabled={isSubmitting}
-                style={{ background: 'var(--violet-800)' }}
-              >
-                <Printer size={20} />
-                <span>{isSubmitting ? 'Registrando...' : 'Imprimir / Salvar em PDF'}</span>
-              </button>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={handleDownloadDocument}
+                  disabled={isSubmitting}
+                >
+                  <Download size={16} />
+                  <span>Baixar Arquivo Oficial</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={handlePrintAndConfirm}
+                  disabled={isSubmitting}
+                  style={{ background: 'var(--violet-800)' }}
+                >
+                  <Printer size={18} />
+                  <span>{isSubmitting ? 'Registrando...' : 'Imprimir / Salvar em PDF'}</span>
+                </button>
+              </div>
             </div>
 
             {/* PRINTABLE OFFICIAL LETTER PAPER */}
@@ -212,7 +312,7 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
                 <div style={{ fontSize: '0.85rem', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   REPÚBLICA FEDERATIVA DO BRASIL • ESTABELECIMENTO DE ENSINO
                 </div>
-                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', margin: '0.35rem 0', color: '#111' }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: '0.35rem 0', color: '#111' }}>
                   {schoolName.toUpperCase()}
                 </div>
                 <div style={{ fontSize: '0.85rem', color: '#444' }}>
@@ -234,11 +334,11 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
               <div style={{ marginBottom: '1.5rem', fontSize: '0.95rem' }}>
                 <div><strong>Ao(À) Ilustríssimo(a) Senhor(a) Conselheiro(a) Tutelar</strong></div>
                 <div>{recipient}</div>
-                <div><strong>Assunto:</strong> Comunicação Obrigatória de Ocorrência Escolar — Artigo 13 da Lei 8.069/1990 (ECA) e Lei 14.811/2024.</div>
+                <div style={{ marginTop: '0.25rem' }}><strong>Assunto:</strong> Comunicação Obrigatória de Ocorrência Escolar — Artigo 13 da Lei 8.069/1990 (ECA) e Lei 14.811/2024.</div>
               </div>
 
               {/* Main Body */}
-              <div style={{ fontSize: '0.95rem', textAlign: 'justify', marginBottom: '1.5rem', textIndent: '2rem' }}>
+              <div style={{ fontSize: '0.95rem', textAlign: 'justify', marginBottom: '1.25rem', textIndent: '2rem' }}>
                 Prezado(a) Conselheiro(a),
               </div>
 
@@ -276,14 +376,14 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
               </div>
 
               {/* Signatures */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '3rem', textAlign: 'center', fontSize: '0.85rem' }}>
-                <div>
+              <div style={{ display: 'flex', justifyContent: 'space-around', gap: '2rem', marginTop: '3rem', textAlign: 'center', fontSize: '0.85rem' }}>
+                <div style={{ width: '45%' }}>
                   <div style={{ borderTop: '1px solid #333', paddingTop: '0.5rem' }}>
                     <strong>DIREÇÃO ESCOLAR</strong><br />
                     Unidade de Ensino
                   </div>
                 </div>
-                <div>
+                <div style={{ width: '45%' }}>
                   <div style={{ borderTop: '1px solid #333', paddingTop: '0.5rem' }}>
                     <strong>{managerName.toUpperCase()}</strong><br />
                     Comitê de Proteção Escolar (4 Por Todas)
@@ -292,7 +392,7 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
               </div>
 
               {/* Footer legal watermark */}
-              <div style={{ marginTop: '2rem', paddingTop: '0.5rem', borderTop: '1px solid #eee', fontSize: '0.7rem', color: '#777', textAlign: 'center' }}>
+              <div style={{ marginTop: '2.5rem', paddingTop: '0.5rem', borderTop: '1px solid #eee', fontSize: '0.7rem', color: '#777', textAlign: 'center' }}>
                 Documento emitido eletronicamente pelo Sistema 4 Por Todas em conformidade com as Leis Federais 8.069/1990, 14.811/2024 e 13.709/2018 (LGPD).
               </div>
             </div>

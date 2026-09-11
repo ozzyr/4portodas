@@ -4,26 +4,68 @@
    ========================================================================== */
 
 /* Print Styles for Official PDF Generation */
+@page {
+  size: A4 portrait;
+  margin: 15mm;
+}
+
 @media print {
-  body * {
-    visibility: hidden;
+  /* Esconde cabeçalho, barra de segurança, rodapé e conteúdo principal */
+  .safety-bar,
+  .app-header,
+  header,
+  footer,
+  main,
+  .no-print {
+    display: none !important;
   }
-  .printable-oficio-paper, .printable-oficio-paper * {
-    visibility: visible;
+
+  /* Reseta o backdrop do modal para permitir a renderização completa do papel */
+  .modal-backdrop {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    inset: auto !important;
+    overflow: visible !important;
+    width: 100% !important;
+    height: auto !important;
   }
+
+  .modal-dispatch-content {
+    position: static !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    background: transparent !important;
+  }
+
+  /* Estiliza o papel do ofício para folha A4 limpa */
   .printable-oficio-paper {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 20mm !important;
+    display: block !important;
+    visibility: visible !important;
+    position: relative !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
     border: none !important;
     box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: 'Times New Roman', Times, Georgia, serif !important;
+    font-size: 11pt !important;
+    line-height: 1.5 !important;
   }
-  .no-print, .safety-bar, .app-header, footer, .modal-backdrop {
-    display: none !important;
-    background: none !important;
+
+  .printable-oficio-paper * {
+    visibility: visible !important;
+    color: #000000 !important;
   }
 }
 
