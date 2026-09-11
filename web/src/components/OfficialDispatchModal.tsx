@@ -34,30 +34,23 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
     year: 'numeric'
   });
 
-  const handlePrintAndConfirm = async () => {
-    setIsSubmitting(true);
-    await onConfirmDispatch(reportCase.id, dispatchText, recipient);
-    setIsSubmitting(false);
-
-    // Aciona a impressão/geração de PDF nativa do navegador
-    setTimeout(() => {
-      window.print();
-    }, 200);
-  };
-
-  const handleDownloadDocument = async () => {
-    setIsSubmitting(true);
-    await onConfirmDispatch(reportCase.id, dispatchText, recipient);
-    setIsSubmitting(false);
-
-    const docContent = `<!DOCTYPE html>
+  const generateDocumentHtml = () => `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Ofício Formal de Encaminhamento — Protocolo ${reportCase.id}</title>
   <style>
-    @page { size: A4; margin: 20mm; }
-    body { font-family: 'Times New Roman', Times, Georgia, serif; line-height: 1.6; color: #111; max-width: 800px; margin: 0 auto; padding: 20px; }
+    @page { size: A4 portrait; margin: 15mm 20mm; }
+    * { box-sizing: border-box; }
+    body { 
+      font-family: 'Times New Roman', Times, Georgia, serif; 
+      line-height: 1.6; 
+      color: #000000; 
+      background: #ffffff;
+      max-width: 800px; 
+      margin: 0 auto; 
+      padding: 20px; 
+    }
     .header { text-align: center; border-bottom: 2px solid #222; padding-bottom: 12px; margin-bottom: 24px; }
     .header-sub { font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; }
     .header-title { font-size: 20px; font-weight: bold; margin: 6px 0; }
@@ -124,6 +117,47 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
 </body>
 </html>`;
 
+  const handlePrintAndConfirm = async () => {
+    setIsSubmitting(true);
+    await onConfirmDispatch(reportCase.id, dispatchText, recipient);
+    setIsSubmitting(false);
+
+    // Cria um iframe isolado dedicado para impressão limpa garantida
+    const html = generateDocumentHtml();
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const frameDoc = iframe.contentWindow?.document || iframe.contentDocument;
+    if (frameDoc && iframe.contentWindow) {
+      frameDoc.open();
+      frameDoc.write(html);
+      frameDoc.close();
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        setTimeout(() => {
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        }, 1500);
+      }, 300);
+    } else {
+      window.print();
+    }
+  };
+
+  const handleDownloadDocument = async () => {
+    setIsSubmitting(true);
+    await onConfirmDispatch(reportCase.id, dispatchText, recipient);
+    setIsSubmitting(false);
+
+    const docContent = generateDocumentHtml();
     const blob = new Blob([docContent], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -393,7 +427,7 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
 
               {/* Footer legal watermark */}
               <div style={{ marginTop: '2.5rem', paddingTop: '0.5rem', borderTop: '1px solid #eee', fontSize: '0.7rem', color: '#777', textAlign: 'center' }}>
-                Documento emitido eletronicamente pelo Sistema 4 Por Todas em conformidade com as Leis Federais 8.069/1990, 14.811/2024 e 13.709/2018 (LGPD).
+                Documento emitido eletronicamente pelo Sistema 4 Por Todas em conformidade com as Leis Federais 8.069/1990 (ECA), 14.811/2024 e 13.709/2018 (LGPD).
               </div>
             </div>
           </div>
