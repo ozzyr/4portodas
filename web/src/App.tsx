@@ -7,6 +7,7 @@ import { EmergencyModal } from './components/EmergencyModal';
 import { ProtocolModal } from './components/ProtocolModal';
 import { CommitteeLoginModal } from './components/CommitteeLoginModal';
 import { CommitteeDashboard } from './components/CommitteeDashboard';
+import { PwaInstallBanner } from './components/PwaInstallBanner';
 import { ReportCase } from './types';
 import { ApiService } from './services/api';
 
@@ -104,6 +105,9 @@ export const App: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* PWA Install Prompt Banner */}
+      <PwaInstallBanner />
 
       {/* Modals */}
       <EmergencyModal

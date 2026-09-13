@@ -1,0 +1,43 @@
+{
+  "name": "4 Por Todas — Acolhimento & Proteção Escolar",
+  "short_name": "4 Por Todas",
+  "description": "Canal seguro, confidencial e acolhedor para estudantes relatarem situações de violência ou assédio e buscarem apoio escolar e institucional.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FAFAFB",
+  "theme_color": "#CC3B88",
+  "orientation": "portrait",
+  "categories": ["education", "social", "lifestyle"],
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "./assets/mascote.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/mascote.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Fazer Relato Seguro",
+      "short_name": "Relatar",
+      "description": "Iniciar relato confidencial",
+      "url": "./#relatoFormSection",
+      "icons": [{ "src": "./assets/mascote.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Ajuda Imediata 24h",
+      "short_name": "Emergência",
+      "description": "Telefones 180, 190 e 188",
+      "url": "./#emergencia",
+      "icons": [{ "src": "./assets/mascote.png", "sizes": "192x192" }]
+    }
+  ]
+}
