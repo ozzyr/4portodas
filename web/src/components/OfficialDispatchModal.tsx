@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Printer, FileText, ArrowLeft, Download } from 'lucide-react';
+import { X, Printer, FileText, ArrowLeft, Download, ShieldCheck, Sparkles } from 'lucide-react';
 import { ReportCase } from '../types';
 
 interface OfficialDispatchModalProps {
@@ -9,6 +9,21 @@ interface OfficialDispatchModalProps {
   onConfirmDispatch: (caseId: string, dispatchText: string, recipientCouncil: string) => Promise<void>;
   currentUserName?: string;
 }
+
+const DISPATCH_PRESETS = [
+  {
+    label: 'Padrão (Escuta Ativa & Art. 13 ECA)',
+    text: 'Em estrito cumprimento ao Artigo 13 da Lei Federal nº 8.069/1990 (ECA) e aos protocolos da Lei nº 14.811/2024, encaminhamos a este respeitável órgão tutelar a ocorrência confidencial registrada no canal seguro "4 Por Todas". A equipe escolar realizou escuta ativa e acolhimento psicossocial inicial, resguardando a integridade da aluna e evitando qualquer tipo de acareação interna. Solicitamos a adoção das medidas protetivas e acompanhamento pertinentes no âmbito da rede de proteção.'
+  },
+  {
+    label: 'Urgência (Necessidade de Rede Protetiva CREAS/CRAS)',
+    text: 'Encaminhamos a presente notificação com solicitação de intervenção prioritária da rede de assistência e proteção social. O Comitê Escolar acolheu a aluna em ambiente privativo e assegurou o suporte emocional inicial. Requeremos articulação intersetorial urgente junto ao Conselho Tutelar e órgãos competentes para garantir a segurança integral da estudante e de seus familiares.'
+  },
+  {
+    label: 'Mediação Institucional & Monitoramento Ativo',
+    text: 'Notificamos este Conselho Tutelar acerca dos fatos relatados para ciência e providências institucionais cabíveis. No âmbito escolar, a equipe gestora intensificou o monitoramento preventivo nos locais indicados e manterá o acompanhamento psicopedagógico contínuo, preservando integralmente o sigilo e a dignidade de todas as partes envolvidas.'
+  }
+];
 
 export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
   isOpen,
@@ -20,9 +35,7 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
   const [recipient, setRecipient] = useState('Conselho Tutelar Regional da Comarca');
   const [schoolName, setSchoolName] = useState('Escola de Educação Básica — Comitê 4 Por Todas');
   const [managerName, setManagerName] = useState(currentUserName || 'Coordenação Pedagógica & Psicologia Escolar');
-  const [dispatchText, setDispatchText] = useState(
-    'Em estrito cumprimento ao Artigo 13 da Lei Federal nº 8.069/1990 (Estatuto da Criança e do Adolescente) e aos protocolos da Lei nº 14.811/2024, encaminhamos a este respeitável órgão tutelar a ocorrência confidencial registrada no canal seguro "4 Por Todas". A equipe escolar realizou escuta ativa e acolhimento psicossocial inicial, resguardando a integridade da aluna e evitando qualquer tipo de acareação interna. Solicitamos a adoção das medidas protetivas e acompanhamento pertinentes no âmbito da rede de proteção.'
-  );
+  const [dispatchText, setDispatchText] = useState(DISPATCH_PRESETS[0].text);
   const [viewMode, setViewMode] = useState<'editor' | 'preview'>('editor');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -168,14 +181,14 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(23, 18, 22, 0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
+    <div className="modal-backdrop" onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(23, 18, 22, 0.75)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
       <div
         className="card modal-dispatch-content"
         onClick={(e) => e.stopPropagation()}
         style={{
-          maxWidth: viewMode === 'preview' ? '860px' : '720px',
+          maxWidth: viewMode === 'preview' ? '860px' : '740px',
           width: '100%',
-          maxHeight: '90vh',
+          maxHeight: '92vh',
           overflowY: 'auto',
           background: '#fff',
           borderRadius: 'var(--radius-xl)',
@@ -189,7 +202,8 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
           type="button"
           onClick={onClose}
           className="no-print"
-          style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--neutral-500)' }}
+          aria-label="Fechar ofício"
+          style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--neutral-500)', minHeight: '44px', minWidth: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
           <X size={24} />
         </button>
@@ -197,48 +211,57 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
         {/* EDITOR MODE */}
         {viewMode === 'editor' && (
           <div>
+            {/* Modal Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--violet-100)', color: 'var(--violet-800)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <FileText size={22} />
+              <div style={{ width: 46, height: 46, borderRadius: '50%', background: 'var(--violet-100)', color: 'var(--violet-800)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <FileText size={24} />
               </div>
               <div>
-                <h2 style={{ fontSize: 'var(--font-size-xl)', color: 'var(--neutral-900)' }}>
-                  Elaborar Ofício ao Conselho Tutelar
+                <h2 style={{ fontSize: 'var(--font-size-xl)', color: 'var(--neutral-900)', margin: 0 }}>
+                  Expedição de Ofício de Notificação Compulsória
                 </h2>
-                <p style={{ fontSize: 'var(--font-size-sm)', margin: 0, color: 'var(--neutral-600)' }}>
+                <p style={{ fontSize: 'var(--font-size-sm)', margin: '0.2rem 0 0 0', color: 'var(--neutral-600)' }}>
                   Fundamentação Legal: <strong>Art. 13 do ECA (Lei 8.069/90) & Lei 14.811/2024</strong>
                 </p>
               </div>
             </div>
 
+            {/* Clarify Legal Directive Guidance Box */}
+            <div style={{ background: 'var(--violet-50)', border: '1px solid var(--violet-200)', borderRadius: 'var(--radius-md)', padding: '0.85rem 1rem', marginBottom: '1.25rem', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+              <ShieldCheck size={20} color="var(--violet-700)" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div style={{ fontSize: '0.82rem', color: 'var(--violet-950)', lineHeight: 1.4 }}>
+                <strong>Diretriz de Proteção e Não Acareação:</strong> A emissão deste ofício cumpre a obrigação legal da escola sem expor a vítima a constrangimentos ou acareações. Todos os dados permanecem sob sigilo funcional (LGPD).
+              </div>
+            </div>
+
             {/* Case Snapshot Box */}
             <div style={{ background: 'var(--neutral-100)', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', marginBottom: '1.25rem', border: '1px solid var(--neutral-300)', fontSize: '0.85rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
-                <span><strong>Protocolo:</strong> <span style={{ color: 'var(--violet-900)', fontWeight: 800 }}>{reportCase.id}</span></span>
-                <span><strong>Data da Ocorrência:</strong> {reportCase.date}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <span><strong>Protocolo Confidencial:</strong> <span style={{ color: 'var(--violet-900)', fontWeight: 800 }}>{reportCase.id}</span></span>
+                <span><strong>Data do Registro:</strong> {reportCase.date}</span>
               </div>
-              <div><strong>Tipo:</strong> {reportCase.type} ({reportCase.location})</div>
-              <div><strong>Identificação:</strong> {reportCase.isAnonymous ? '🔒 Sigiloso (Relato Anônimo)' : `👤 ${reportCase.studentName}`}</div>
+              <div style={{ marginBottom: '0.25rem' }}><strong>Ocorrência:</strong> {reportCase.type} ({reportCase.location} • {reportCase.frequency})</div>
+              <div><strong>Regime de Sigilo:</strong> {reportCase.isAnonymous ? '🔒 100% Anônimo (Art. 100 do ECA)' : `👤 Identificado (${reportCase.studentName})`}</div>
             </div>
 
             {/* Form Fields */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem', marginBottom: '1.5rem' }}>
               <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--neutral-800)', display: 'block', marginBottom: '0.25rem' }}>
-                  Destinatário (Conselho Tutelar):
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--neutral-800)', display: 'block', marginBottom: '0.35rem' }}>
+                  Destinatário (Conselho Tutelar / Órgão Competente):
                 </label>
                 <input
                   type="text"
                   className="form-input"
                   value={recipient}
                   onChange={(e) => setRecipient(e.target.value)}
-                  style={{ width: '100%', padding: '0.65rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--neutral-300)' }}
+                  style={{ width: '100%', minHeight: '46px', padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--neutral-300)' }}
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="dispatch-two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--neutral-800)', display: 'block', marginBottom: '0.25rem' }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--neutral-800)', display: 'block', marginBottom: '0.35rem' }}>
                     Nome da Unidade Escolar:
                   </label>
                   <input
@@ -246,11 +269,11 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
                     className="form-input"
                     value={schoolName}
                     onChange={(e) => setSchoolName(e.target.value)}
-                    style={{ width: '100%', padding: '0.65rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--neutral-300)' }}
+                    style={{ width: '100%', minHeight: '46px', padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--neutral-300)' }}
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--neutral-800)', display: 'block', marginBottom: '0.25rem' }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--neutral-800)', display: 'block', marginBottom: '0.35rem' }}>
                     Responsável pelo Encaminhamento:
                   </label>
                   <input
@@ -258,15 +281,45 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
                     className="form-input"
                     value={managerName}
                     onChange={(e) => setManagerName(e.target.value)}
-                    style={{ width: '100%', padding: '0.65rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--neutral-300)' }}
+                    style={{ width: '100%', minHeight: '46px', padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--neutral-300)' }}
                   />
                 </div>
               </div>
 
+              {/* Presets Selector */}
               <div>
-                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--neutral-800)', display: 'block', marginBottom: '0.25rem' }}>
-                  Parecer e Contextualização do Comitê de Gestão Escolar:
-                </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <label style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--neutral-800)', display: 'block' }}>
+                    Parecer Psicopedagógico da Gestão Escolar:
+                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.78rem', color: 'var(--violet-700)', fontWeight: 600 }}>
+                    <Sparkles size={14} />
+                    <span>Modelos Rápidos:</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                  {DISPATCH_PRESETS.map((p, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setDispatchText(p.text)}
+                      style={{
+                        padding: '0.3rem 0.6rem',
+                        fontSize: '0.75rem',
+                        borderRadius: 'var(--radius-sm)',
+                        background: dispatchText === p.text ? 'var(--violet-100)' : 'var(--neutral-100)',
+                        border: `1px solid ${dispatchText === p.text ? 'var(--violet-400)' : 'var(--neutral-300)'}`,
+                        color: dispatchText === p.text ? 'var(--violet-900)' : 'var(--neutral-700)',
+                        cursor: 'pointer',
+                        fontWeight: dispatchText === p.text ? 700 : 500
+                      }}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+
                 <textarea
                   className="form-textarea"
                   rows={5}
@@ -274,17 +327,16 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
                   onChange={(e) => setDispatchText(e.target.value)}
                   style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--neutral-300)', fontFamily: 'inherit', fontSize: '0.9rem', lineHeight: 1.5 }}
                 />
-                <span style={{ fontSize: '0.75rem', color: 'var(--neutral-500)' }}>
-                  Você pode editar o texto acima para incluir observações da escuta psicopedagógica antes de gerar o documento.
-                </span>
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--neutral-200)', paddingTop: '1.25rem' }}>
+            {/* Action Bar */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--neutral-200)', paddingTop: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
               <button
                 type="button"
                 className="btn btn-subtle"
                 onClick={onClose}
+                style={{ minHeight: '44px' }}
               >
                 Cancelar
               </button>
@@ -293,8 +345,9 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
                 type="button"
                 className="btn btn-primary"
                 onClick={() => setViewMode('preview')}
+                style={{ minHeight: '48px', padding: '0.75rem 1.5rem' }}
               >
-                <span>Visualizar Documento Oficial</span>
+                <span>Visualizar Modelo Oficial A4</span>
                 <FileText size={18} />
               </button>
             </div>
@@ -309,20 +362,22 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
                 type="button"
                 className="btn btn-secondary btn-sm"
                 onClick={() => setViewMode('editor')}
+                style={{ minHeight: '44px' }}
               >
                 <ArrowLeft size={16} />
                 <span>Voltar e Editar</span>
               </button>
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
                   onClick={handleDownloadDocument}
                   disabled={isSubmitting}
+                  style={{ minHeight: '44px' }}
                 >
                   <Download size={16} />
-                  <span>Baixar Arquivo Oficial</span>
+                  <span>Baixar Arquivo HTML</span>
                 </button>
 
                 <button
@@ -330,7 +385,7 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
                   className="btn btn-primary btn-sm"
                   onClick={handlePrintAndConfirm}
                   disabled={isSubmitting}
-                  style={{ background: 'var(--violet-800)' }}
+                  style={{ background: 'var(--violet-800)', minHeight: '44px' }}
                 >
                   <Printer size={18} />
                   <span>{isSubmitting ? 'Registrando...' : 'Imprimir / Salvar em PDF'}</span>
@@ -377,7 +432,7 @@ export const OfficialDispatchModal: React.FC<OfficialDispatchModalProps> = ({
               </div>
 
               <div style={{ fontSize: '0.92rem', textAlign: 'justify', marginBottom: '1.25rem', textIndent: '2rem' }}>
-                Vimos por meio deste formalizar a notificação compulsória referente ao relato de violência/assédio escolar registrado no canal protegido institucional sob o <strong>Protocolo nº {reportCase.id}</strong> em <strong>{reportCase.date}</strong>, conforme os dados sintetizados a seguir:
+                Vimos por meio deste formalizar a notificação compulsória referente ao relato de violência/assédio escolar registrado no canal protegido institucional sob o <strong>Protocolo nº {reportCase.id}</strong> em <strong>${reportCase.date}</strong>, conforme os dados sintetizados a seguir:
               </div>
 
               {/* Case Details Box */}
