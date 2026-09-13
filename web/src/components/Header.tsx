@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PhoneCall, Search, Lock, UserCheck, Menu, X, Shield, ArrowRight, LogOut, BookOpen } from 'lucide-react';
+import { PhoneCall, Search, Lock, UserCheck, Menu, X, Shield, ArrowRight, LogOut, BookOpen, Smartphone } from 'lucide-react';
 
 interface HeaderProps {
   onOpenEmergency: () => void;
@@ -310,7 +310,44 @@ export const Header: React.FC<HeaderProps> = ({
                   </div>
                   <ArrowRight size={18} color="var(--neutral-400)" />
                 </button>
+
+                <button
+                  type="button"
+                  className="mobile-nav-item"
+                  onClick={() => {
+                    handleNavAction(() => {
+                      window.dispatchEvent(new CustomEvent('open-pwa-install'));
+                    });
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    padding: '0.85rem 1rem',
+                    borderRadius: 'var(--radius-lg)',
+                    background: 'linear-gradient(135deg, var(--pink-50), var(--violet-50))',
+                    border: '1.5px dashed var(--pink-300)',
+                    color: 'var(--pink-700)',
+                    fontWeight: 700,
+                    fontSize: '0.92rem',
+                    cursor: 'pointer',
+                    minHeight: '48px'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--pink-500)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Smartphone size={17} />
+                    </div>
+                    <div style={{ textAlign: 'left' }}>
+                      <div>Criar Atalho na Tela Inicial</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--pink-600)', fontWeight: 500 }}>Instalar app no celular</div>
+                    </div>
+                  </div>
+                  <ArrowRight size={16} color="var(--pink-600)" />
+                </button>
               </>
+
             ) : (
               <>
                 <div style={{ background: 'var(--violet-50)', padding: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--violet-200)' }}>

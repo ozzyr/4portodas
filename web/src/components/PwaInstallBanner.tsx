@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, X, Smartphone, Share, CheckCircle2 } from 'lucide-react';
+import { Download, X, Smartphone, Share, CheckCircle2, PlusSquare } from 'lucide-react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -10,6 +10,7 @@ export const PwaInstallBanner: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isStandalone, setIsStandalone] = useState(false);
   const [isIos, setIsIos] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [showIosGuide, setShowIosGuide] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -24,51 +25,65 @@ export const PwaInstallBanner: React.FC = () => {
 
     setIsStandalone(checkStandalone());
 
-    // Check if iOS
+    // Check device type
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
+    const isMobileDevice = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent) || window.innerWidth < 768;
+    
     setIsIos(isIosDevice);
+    setIsMobile(isMobileDevice);
 
-    // Listen for beforeinstallprompt event (Chromium browsers / Android)
+    // Listen for beforeinstallprompt event (Android / Chromium)
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
+    // Listen for custom trigger from anywhere in the app (e.g. Header button)
+    const handleCustomTrigger = () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+      } else {
+        setShowIosGuide(true);
+      }
+    };
+
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('open-pwa-install', handleCustomTrigger);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('open-pwa-install', handleCustomTrigger);
     };
-  }, []);
+  }, [deferredPrompt]);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const choiceResult = await deferredPrompt.userChoice;
       if (choiceResult.outcome === 'accepted') {
-        console.log('[PWA] Usuário aceitou a instalação do app');
+        console.log('[PWA] Usuário aceitou a instalação do atalho do app');
       }
       setDeferredPrompt(null);
-    } else if (isIos) {
+    } else {
       setShowIosGuide(true);
     }
   };
 
-  // Do not show if already in standalone app mode or dismissed
+  // Do not show if already running as installed app or dismissed
   if (isStandalone || dismissed) {
     return null;
   }
 
-  // Show only if deferredPrompt is available or if on iOS Safari
-  if (!deferredPrompt && !isIos) {
+  // Show banner on mobile or when beforeinstallprompt is ready
+  if (!isMobile && !deferredPrompt) {
     return null;
   }
 
   return (
     <>
       <aside
-        aria-label="Instalar aplicativo"
+        aria-label="Instalar atalho do aplicativo"
         className="pwa-install-banner"
         style={{
           position: 'fixed',
@@ -108,10 +123,10 @@ export const PwaInstallBanner: React.FC = () => {
 
           <div>
             <div style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--violet-950)' }}>
-              Instale o App 4 Por Todas
+              Adicionar Atalho na Tela Inicial
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--neutral-600)' }}>
-              Acesso rápido, discreto e sem ocupar espaço na memória
+              Acesso rápido com 1 toque como aplicativo móvel
             </div>
           </div>
         </div>
@@ -124,7 +139,7 @@ export const PwaInstallBanner: React.FC = () => {
             style={{ minHeight: '38px', padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}
           >
             <Download size={15} />
-            <span>Instalar</span>
+            <span>Adicionar</span>
           </button>
 
           <button
@@ -147,7 +162,7 @@ export const PwaInstallBanner: React.FC = () => {
         </div>
       </aside>
 
-      {/* iOS Safari Guide Modal */}
+      {/* Guide Modal (iOS Safari or Android without prompt) */}
       {showIosGuide && (
         <div
           className="modal-backdrop"
@@ -168,7 +183,7 @@ export const PwaInstallBanner: React.FC = () => {
             className="card"
             onClick={(e) => e.stopPropagation()}
             style={{
-              maxWidth: '420px',
+              maxWidth: '440px',
               width: '100%',
               backgroundColor: '#fff',
               borderRadius: 'var(--radius-xl)',
@@ -180,7 +195,7 @@ export const PwaInstallBanner: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowIosGuide(false)}
-              aria-label="Fechar guia iOS"
+              aria-label="Fechar guia"
               style={{
                 position: 'absolute',
                 top: '1rem',
@@ -188,7 +203,8 @@ export const PwaInstallBanner: React.FC = () => {
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                color: 'var(--neutral-500)'
+                color: 'var(--neutral-500)',
+                padding: '0.25rem'
               }}
             >
               <X size={20} />
@@ -197,33 +213,54 @@ export const PwaInstallBanner: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
               <div
                 style={{
-                  width: 44,
-                  height: 44,
+                  width: 48,
+                  height: 48,
                   borderRadius: '50%',
-                  background: 'var(--violet-50)',
+                  background: 'var(--pink-50)',
+                  border: '2px solid var(--pink-200)',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  flexShrink: 0
                 }}
               >
-                <Share size={22} color="var(--violet-700)" />
+                <PlusSquare size={24} color="var(--pink-600)" />
               </div>
-              <h3 style={{ fontSize: 'var(--font-size-lg)', color: 'var(--violet-950)', margin: 0, fontWeight: 800 }}>
-                Como Instalar no iPhone / iPad
-              </h3>
+              <div>
+                <h3 style={{ fontSize: 'var(--font-size-lg)', color: 'var(--violet-950)', margin: 0, fontWeight: 800 }}>
+                  Criar Atalho na Tela Inicial
+                </h3>
+                <span style={{ fontSize: '0.8rem', color: 'var(--neutral-600)' }}>
+                  {isIos ? 'Instruções para iPhone e iPad (Safari)' : 'Instruções para Navegador Mobile'}
+                </span>
+              </div>
             </div>
 
-            <ol style={{ paddingLeft: '1.25rem', fontSize: '0.9rem', color: 'var(--neutral-700)', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
-              <li style={{ marginBottom: '0.5rem' }}>
-                Toque no ícone de <strong>Compartilhar</strong> (<Share size={14} style={{ display: 'inline' }} />) na barra inferior do Safari.
-              </li>
-              <li style={{ marginBottom: '0.5rem' }}>
-                Role as opções e selecione <strong>"Adicionar à Tela de Início"</strong>.
-              </li>
-              <li>
-                Toque em <strong>"Adicionar"</strong> no canto superior direito.
-              </li>
-            </ol>
+            {isIos ? (
+              <ol style={{ paddingLeft: '1.25rem', fontSize: '0.9rem', color: 'var(--neutral-700)', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
+                <li style={{ marginBottom: '0.6rem' }}>
+                  Toque no botão de <strong>Compartilhar</strong> (<Share size={15} style={{ display: 'inline', verticalAlign: 'middle', color: 'var(--violet-700)' }} />) na barra inferior do Safari.
+                </li>
+                <li style={{ marginBottom: '0.6rem' }}>
+                  Role a lista e toque em <strong>"Adicionar à Tela de Início"</strong>.
+                </li>
+                <li>
+                  Toque em <strong>"Adicionar"</strong> no canto superior direito para finalizar.
+                </li>
+              </ol>
+            ) : (
+              <ol style={{ paddingLeft: '1.25rem', fontSize: '0.9rem', color: 'var(--neutral-700)', lineHeight: 1.6, margin: '0 0 1.5rem 0' }}>
+                <li style={{ marginBottom: '0.6rem' }}>
+                  Toque no menu de <strong>três pontos (⋮)</strong> no canto superior do navegador Chrome/Edge.
+                </li>
+                <li style={{ marginBottom: '0.6rem' }}>
+                  Selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.
+                </li>
+                <li>
+                  Confirme tocando em <strong>"Instalar"</strong>.
+                </li>
+              </ol>
+            )}
 
             <button
               type="button"
@@ -232,7 +269,7 @@ export const PwaInstallBanner: React.FC = () => {
               style={{ width: '100%', minHeight: '44px', justifyContent: 'center' }}
             >
               <CheckCircle2 size={16} />
-              <span>Entendido</span>
+              <span>Entendido, vou adicionar</span>
             </button>
           </div>
         </div>

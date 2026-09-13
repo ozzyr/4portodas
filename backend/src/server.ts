@@ -5,9 +5,9 @@ import { statsRouter } from "./routes/stats";
 import { authRouter } from "./routes/auth";
 
 const app = express();
-const PORT = process.env.PORT || 3333;
+const PORT = Number(process.env.PORT) || 3333;
 
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 // Health check
@@ -20,7 +20,7 @@ app.use("/api/reports", reportsRouter);
 app.use("/api/stats", statsRouter);
 app.use("/api/auth", authRouter);
 
-app.listen(PORT, () => {
-  console.log(`🌸 Servidor 4 Por Todas rodando com sucesso em http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🌸 Servidor 4 Por Todas rodando em http://localhost:${PORT} e na rede local http://0.0.0.0:${PORT}`);
   console.log(`🛡️  Conformidade LGPD & Lei 14.811/2024 ativa.`);
 });
